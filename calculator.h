@@ -26,6 +26,7 @@ private slots:
     void equalsButtonPressed();
     void eraseButtonPressed();
     void clearButtonPressed();
+    void signChangeButtonPressed();
     double calculate();
 };
 #endif // CALCULATOR_H

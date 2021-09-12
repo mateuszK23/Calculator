@@ -188,7 +188,7 @@ QPushButton:pressed{
      </widget>
     </item>
     <item row="5" column="4">
-     <widget class="QPushButton" name="ButtonPercent">
+     <widget class="QPushButton" name="ButtonSignChange">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
         <horstretch>0</horstretch>
@@ -218,7 +218,7 @@ QPushButton:pressed{
 </string>
       </property>
       <property name="text">
-       <string>%</string>
+       <string>+/-</string>
       </property>
      </widget>
     </item>

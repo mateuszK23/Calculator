@@ -43,18 +43,12 @@ Calculator::Calculator(QWidget *parent)
     connect(ui->ButtonMultiply, SIGNAL(released()), this, SLOT(mathButtonPressed()));
     connect(ui->ButtonEquals, SIGNAL(released()), this, SLOT(equalsButtonPressed()));
     connect(ui->ButtonClear, SIGNAL(released()), this, SLOT(clearButtonPressed()));
+     connect(ui->ButtonSignChange, SIGNAL(released()), this, SLOT(signChangeButtonPressed()));
 }
 
 Calculator::~Calculator()
 {
     delete ui;
-}
-
-bool Calculator::isNumber(const string str){
-    for (char c : str) {
-          if (isdigit(c) == 0) return false;
-      }
-      return true;
 }
 
 void Calculator::numPressed()
@@ -182,4 +176,11 @@ void Calculator::eraseButtonPressed()
     QString mainDisplay = ui->Display->text();
     mainDisplay.remove(mainDisplay.length()-1,mainDisplay.length());
     ui->Display->setText(mainDisplay);
+}
+
+void Calculator::signChangeButtonPressed()
+{
+    double value = ui->Display->text().toDouble();
+    value = value * -1;
+    ui->Display->setText(QString::number(value));
 }
