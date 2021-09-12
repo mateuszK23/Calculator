@@ -61,7 +61,10 @@ void Calculator::numPressed()
         equalsPressed = false;
     }
 
-    if(firstDigit) ui->ExpressionDisplay->setText("");
+    if(firstDigit){
+        ui->ExpressionDisplay->setText("");
+        firstDigit = false;
+    }
     QPushButton *button = (QPushButton *)sender();
     QString butVal = button->text();
     QString displayVal = ui->Display->text();

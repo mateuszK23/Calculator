@@ -749,6 +749,14 @@ QPushButton:pressed{
     </item>
     <item row="0" column="0" colspan="5">
      <widget class="QLineEdit" name="ExpressionDisplay">
+      <property name="styleSheet">
+       <string notr="true">QLineEdit{
+	background-color: #ffffff;
+	border: 1px solid gray;
+	padding: 6px;
+	color: #3b3131;
+}</string>
+      </property>
       <property name="text">
        <string/>
       </property>
