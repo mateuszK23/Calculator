@@ -5,6 +5,7 @@
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Calculator; }
+using namespace std;
 QT_END_NAMESPACE
 
 class Calculator : public QMainWindow
@@ -17,5 +18,14 @@ public:
 
 private:
     Ui::Calculator *ui;
+    bool isNumber(const string str);
+
+private slots:
+    void numPressed();
+    void mathButtonPressed();
+    void equalsButtonPressed();
+    void eraseButtonPressed();
+    void clearButtonPressed();
+    double calculate();
 };
 #endif // CALCULATOR_H
