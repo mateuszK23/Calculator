@@ -7,15 +7,15 @@ bool addPressed = false;
 bool subPressed = false;
 bool multPressed = false;
 bool divPressed = false;
+bool equalsPressed = false;
 
-bool firstRound = true;
-bool justCalculated = false;
-bool mathButPressed = false;
 bool firstDigit = true;
+bool firstRound = true;
+bool mathButPressed = false;
+bool mathButPressedTwice = false;
+bool justCalculated = false;
 
 QString lastButValue = "XX";
-
-bool equalsPressed = false;
 
 Calculator::Calculator(QWidget *parent)
     : QMainWindow(parent)
@@ -32,18 +32,17 @@ Calculator::Calculator(QWidget *parent)
         numButtons[i] = Calculator::findChild<QPushButton*>(buttonName);
         connect(numButtons[i], SIGNAL(released()), this, SLOT(numPressed()));
     }
+
     connect(ui->Button00, SIGNAL(released()), this, SLOT(numPressed()));
     connect(ui->ButtonDot, SIGNAL(released()), this, SLOT(numPressed()));
-
     connect(ui->ButtonErase, SIGNAL(released()), this, SLOT(eraseButtonPressed()));
-
     connect(ui->ButtonPlus, SIGNAL(released()), this, SLOT(mathButtonPressed()));
     connect(ui->ButtonDivide, SIGNAL(released()), this, SLOT(mathButtonPressed()));
     connect(ui->ButtonMinus, SIGNAL(released()), this, SLOT(mathButtonPressed()));
     connect(ui->ButtonMultiply, SIGNAL(released()), this, SLOT(mathButtonPressed()));
     connect(ui->ButtonEquals, SIGNAL(released()), this, SLOT(equalsButtonPressed()));
     connect(ui->ButtonClear, SIGNAL(released()), this, SLOT(clearButtonPressed()));
-     connect(ui->ButtonSignChange, SIGNAL(released()), this, SLOT(signChangeButtonPressed()));
+    connect(ui->ButtonSignChange, SIGNAL(released()), this, SLOT(signChangeButtonPressed()));
 }
 
 Calculator::~Calculator()
@@ -58,35 +57,38 @@ void Calculator::numPressed()
         firstRound = true;
         firstDigit = true;
         currentValue = 0.0;
-        equalsPressed = false;
     }
 
     if(firstDigit){
         ui->ExpressionDisplay->setText("");
         firstDigit = false;
     }
+
     QPushButton *button = (QPushButton *)sender();
     QString butVal = button->text();
     QString displayVal = ui->Display->text();
     QString newVal = displayVal + butVal;
 
-    if(justCalculated || firstDigit){
+    if(justCalculated || equalsPressed){
         ui->Display->setText(butVal);
+        equalsPressed = false;
         justCalculated = false;
-        firstDigit = false;
     }
     else if(QString::compare(butVal, ".", Qt::CaseInsensitive) == 0)
     {
          ui->Display->setText(displayVal + butVal);
     }
     else ui->Display->setText(QString::number(newVal.toDouble(), 'g', 16));
+    mathButPressedTwice = false;
 }
 
 void Calculator::mathButtonPressed()
 {
+    firstDigit = false;
     QString displayVal = ui->Display->text();
+    if(justCalculated) mathButPressedTwice = true;
 
-    if(mathButPressed){
+    if(mathButPressed && !mathButPressedTwice && !equalsPressed){
         double result = calculate();
         ui->Display->setText(QString::number(result));
     }
@@ -95,7 +97,6 @@ void Calculator::mathButtonPressed()
     subPressed = false;
     multPressed = false;
     divPressed = false;
-    equalsPressed = false;
 
     QString displayValue = ui->Display->text();
     currentValue = displayValue.toDouble();
@@ -109,7 +110,10 @@ void Calculator::mathButtonPressed()
     if(firstRound) newExpression = displayVal;
     else newExpression = oldExpression + lastButValue + displayVal;
 
-    ui->ExpressionDisplay->setText(newExpression);
+    if(!mathButPressedTwice && !equalsPressed) ui->ExpressionDisplay->setText(newExpression);
+    else ui->ExpressionDisplay->setText(displayVal);
+
+    equalsPressed = false;
     if(QString::compare(butVal, "+", Qt::CaseInsensitive) == 0)
     {
         addPressed = true;
@@ -138,16 +142,25 @@ void Calculator::mathButtonPressed()
 
 void Calculator::equalsButtonPressed()
 {
-    if(QString::compare(lastButValue, "XX", Qt::CaseInsensitive) != 0){
-    QString oldExpression = ui->ExpressionDisplay->text();
-    QString newExpression = oldExpression + lastButValue + ui->Display->text();
-    ui->ExpressionDisplay->setText(newExpression);
+    if(QString::compare(lastButValue, "XX", Qt::CaseInsensitive) != 0 && !equalsPressed){
+    double result = 0.0;
 
-    mathButPressed = false;
-    double result = calculate();
+    if(!justCalculated)
+    {
+        QString oldExpression = ui->ExpressionDisplay->text();
+        QString newExpression = oldExpression + lastButValue + ui->Display->text();
+        result = calculate();
+        ui->ExpressionDisplay->setText(newExpression);
+    }else
+    {
+        result = ui->Display->text().toDouble();
+    }
+
     ui->Display->setText(QString::number(result));
-
     equalsPressed = true;
+    firstDigit = true;
+    firstRound = true;
+    mathButPressed = false;
     }
 }
 
@@ -172,6 +185,7 @@ void Calculator::clearButtonPressed()
     ui->ExpressionDisplay->setText("");
     firstRound = true;
     firstDigit = true;
+    mathButPressed = false;
 }
 
 void Calculator::eraseButtonPressed()
